@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <body onclick="exec()">
+    <!-- partial:index.partial.html -->
+    <meta charset="UTF-8">
+    <title>RammCode</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+      @import url("https://fonts.googleapis.com/css?family=DM+Sans:400,500|Jost:400,500,600&display=swap");
+      *{box-sizing:border-box;}
+      body{color:#2b2c48;font-family:"Jost",sans-serif;background-image:url("https://telegra.ph/file/11e7829cbf77502577a91.png");background-repeat:no-repeat;background-size:cover;background-position:center;background-attachment:fixed;min-height:100vh;display:flex;flex-wrap:wrap;padding:20px;}
+      .card{max-width:340px;margin:auto;overflow-y:auto;position:relative;z-index:1;overflow-x:hidden;background-color:white;display:flex;transition:0.3s;flex-direction:column;border-radius:10px;box-shadow:0 0 0 8px rgba(255,255,255,0.2);}
+      .card[data-state="#about"]{height:450px;}
+      .card[data-state="#about"] .card-main{padding-top:0;}
+      .card[data-state="#contact"]{height:430px;}
+      .card[data-state="#experience"]{height:550px;}
+      .card.is-active .card-header{height:80px;}
+      .card.is-active .card-cover{height:100px;top:-50px;}
+      .card.is-active .card-avatar{transform:none;left:20px;width:50px;height:50px;bottom:10px;}
+      .card.is-active .card-fullname,.card.is-active .card-jobtitle{left:86px;transform:none;}
+      .card.is-active .card-fullname{bottom:18px;font-size:19px;}
+      .card.is-active .card-jobtitle{bottom:16px;letter-spacing:1px;font-size:10px;}
+      .card-header{position:relative;display:flex;height:200px;flex-shrink:0;width:100%;transition:0.3s;}
+      .card-header *{transition:0.3s;}
+      .card-cover{width:100%;height:100%;position:absolute;height:160px;top:-20%;left:0;will-change:top;background-size:cover;background-position:center;filter:blur(30px);transform:scale(1.2);transition:0.5s;}
+      .card-avatar{width:100px;height:100px;box-shadow:0 8px 8px rgba(0,0,0,0.2);border-radius:50%;object-position:center;object-fit:cover;position:absolute;bottom:0;left:50%;transform:translateX(-50%) translateY(-64px);}
+      .card-fullname{position:absolute;bottom:0;font-size:22px;font-weight:700;text-align:center;white-space:nowrap;transform:translateY(-10px) translateX(-50%);left:50%;}
+      .card-jobtitle{position:absolute;bottom:0;font-size:11px;white-space:nowrap;font-weight:500;opacity:0.7;text-transform:uppercase;letter-spacing:1.5px;margin:0;left:50%;transform:translateX(-50%) translateY(-7px);}
+      .card-main{position:relative;flex:1;display:flex;padding-top:10px;flex-direction:column;}
+      .card-subtitle{font-weight:50;font-size:12px;margin-bottom:8px;}
+      .card-content{padding:20px;}
+      .card-desc{line-height:1.6;color:#636b6f;font-size:14px;margin:0;font-weight:400;font-family:"DM Sans",sans-serif;}
+      .card-social{display:flex;align-items:center;padding:0 20px;margin-bottom:30px;}
+      .card-social a{color:#8797a1;height:32px;width:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;transition:0.3s;background-color:rgba(93,133,193,0.05);margin-right:10px;}
+      .card-social a:last-child{margin-right:0;}
+      .card-buttons{display:flex;background-color:#fff;margin-top:auto;position:sticky;bottom:0;left:0;}
+      .card-buttons button{flex:1 1 auto;user-select:none;background:0;font-size:13px;border:0;padding:15px 5px;cursor:pointer;color:#5c5c6d;transition:0.3s;font-family:"Jost",sans-serif;font-weight:500;outline:0;border-bottom:3px solid transparent;}
+      .card-buttons button.is-active,.card-buttons button:hover{color:#2b2c48;border-bottom:3px solid #8a84ff;background:linear-gradient(to bottom,rgba(127,199,231,0) 0%,rgba(207,204,255,0.2) 44%,rgba(211,226,255,0.4) 100%);}
+      .card-section{display:none;}
+      .card-section.is-active{display:block;animation:fadeIn 0.6s both;}
+      @keyframes fadeIn{0%{opacity:0;transform:translatey(40px);}100%{opacity:1;}}
+      .card-timeline{margin-top:30px;position:relative;}
+      .card-timeline:after{background:linear-gradient(to top,rgba(134,214,243,0) 0%,#516acc 100%);content:"";left:42px;width:2px;top:0;height:100%;position:absolute;}
+      .card-item{position:relative;padding-left:60px;padding-right:20px;padding-bottom:30px;z-index:1;}
+      .card-item:last-child{padding-bottom:5px;}
+      .card-item:after{content:attr(data-year);position:absolute;top:0;left:37px;width:8px;height:8px;border:2px solid #fff;border-radius:50%;background:linear-gradient(to bottom,#a0aee3 0%,#516acc 100%);}
+      .card-item-title{font-weight:500;font-size:14px;margin-bottom:5px;}
+      .card-item-desc{font-size:13px;color:#6f6f7b;line-height:1.5;font-family:"DM Sans",sans-serif;}
+      .card-contact-wrapper{margin-top:20px;}
+      .card-contact{display:flex;align-items:center;font-size:13px;color:#6f6f7b;font-family:"DM Sans",sans-serif;line-height:1.6;cursor:pointer;}
+      .card-contact+.card-contact{margin-top:16px;}
+      .card-contact svg{flex-shrink:0;width:30px;min-height:34px;margin-right:12px;transition:0.3s;padding-right:12px;border-right:1px solid #dfe2ec;}
+      .contact-me{border:0;outline:none;background:linear-gradient(to right,rgba(83,200,239,0.8) 0%,rgba(81,106,204,0.8) 96%);box-shadow:0 4px 6px rgba(0,0,0,0.15);color:#fff;padding:12px 16px;width:100%;border-radius:5px;margin-top:25px;cursor:pointer;font-size:14px;font-weight:500;font-family:"Jost",sans-serif;transition:0.3s;}
+      .footer{width:100%;height:50px;padding-left:10px;line-height:50px;color:#fff;}
+    </style>
+    </head>
+    <audio autoplay>
+      <source src="https://qu.ax/igjXv.mp3" type="audio/mp3">
+    </audio>
+    <body>
+      <div class="card" data-state="#about">
+        <div class="card-header">
+          <div class="card-cover" style="background-image: url('https://telegra.ph/file/11e7829cbf77502577a91.png')"></div>
+          <img class="card-avatar" src="https://telegra.ph/file/5a6743ab345af55176332.jpg" alt="avatar" />
+          <h1 class="card-fullname">RammCode</h1>
+          <h2 class="card-jobtitle">Rama Lg Ewean.</h2>
+        </div>
+        <div class="card-main">
+          <div class="card-section is-active" id="about">
+            <div class="card-content">
+              <div class="card-subtitle">@RammMD</div>
+              <p class="card-text">Tetaplah terlihat gapunya apa apa, soalnya seru kalau kita di remehin</p>
+              <p class="card-item-desc"> - Aslinya Anak Rendahan</p>
+            </div>
+            <div class="card-social">
+              <a href="https://wa.me/6283862715733"><i class="fab fa-whatsapp"></i></a>
+              <a href="https://t.me/rammhv"><i class="fab fa-telegram"></i></a>
+              <a href="https://www.instagram.com/@ramzleveling"><i class="fab fa-instagram"></i></a>
+              <a href="https://github.com/rammzMD"><i class="fab fa-github"></i></a>
+            </div>
+          </div>
+          <div class="card-section" id="experience">
+            <div class="card-content">
+              <div class="card-subtitle">Tetap diam walau benar.</div>
+              <div class="card-timeline">
+                <div class="card-item" data-year="2018">
+                  <div class="card-item-title">Menemukan Hoby Baru</div>
+                  <div class="card-item-desc">Mulai terobsesi dengan teknologi<br>2018 - Maret - 13</div>
+                </div>
+                <div class="card-item" data-year="2019">
+                  <div class="card-item-title">Mempelajari Pemrograman</div>
+                  <div class="card-item-desc">Device yang mendominasi<br>2019 - Agustus - 9</div>
+                </div>
+                <div class="card-item" data-year="2021">
+                  <div class="card-item-title">Mendalami Dunia Programing</div>
+                  <div class="card-item-desc">Membuat WhatsApp bot<br>2021 - September - 13</div>
+                </div>
+                <div class="card-item" data-year="2022">
+                  <div class="card-item-title">Mencoba Membuat Rest Api</div>
+                  <div class="card-item-desc">Membuat Rest Api Bot WhatsApp<br>2022 - Juli - 5</div>
+                </div>
+                <div class="card-item" data-year="2024">
+                  <div class="card-item-title">Lebih Serius Dengan Pemrograman</div>
+                  <div class="card-item-desc">Belajar html, css, python php, reactjs dan Javascript<br>2024 -</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-section" id="contact">
+            <div class="card-content">
+              <div class="card-subtitle">CONTACT</div>
+              <div class="card-contact-wrapper">
+                <div class="card-contact">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg> kalsel , banjarmasin , Indonesia
+                </div>
+                <!-- WhatsApp -->
+                <div class="card-contact">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <path d="M21.05 11.05a9 9 0 1 1-16.1 5.4L3 21l4.7-1.9a9 9 0 0 1 13.35-8.05z"/>
+                    <path d="M8 12c1.5 3 6 5 6 5l2-2"/>
+                  </svg>
+                  <a href="https://wa.me/6283862715733" target="_blank">Wangsaf</a>
+                </div>
+                <!-- Telegram -->
+                <div class="card-contact">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <path d="M22 2L11 13"/>
+                    <path d="M22 2l-7 20-4-9-9-4z"/>
+                  </svg>
+                  <a href="https://t.me/rammhv" target="_blank">Telegram</a>
+                </div>
+                <a href="https://github.com/rammzMD">
+                  <button class="contact-me">Github</button>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="card-buttons">
+            <button data-section="#about" class="is-active">HOME</button>
+            <button data-section="#experience">PROGRESS</button>
+            <button data-section="#contact">CONTACT</button>
+          </div>
+        </div>
+      </div>
+      <audio id="audio" style="display:none">
+        <source src="https://qu.ax/igjXv.mp3" type="audio/mpeg">
+      </audio>
+      <script>
+        const buttons=document.querySelectorAll(".card-buttons button");
+        const sections=document.querySelectorAll(".card-section");
+        const card=document.querySelector(".card");
+        const handleButtonClick=e=>{const targetSection=e.target.getAttribute("data-section");const section=document.querySelector(targetSection);targetSection!=="#about"?card.classList.add("is-active"):card.classList.remove("is-active");card.setAttribute("data-state",targetSection);sections.forEach(s=>s.classList.remove("is-active"));buttons.forEach(b=>b.classList.remove("is-active"));e.target.classList.add("is-active");section.classList.add("is-active");};
+        buttons.forEach(btn=>{btn.addEventListener("click",handleButtonClick);});
+      </script>
+      <script src="https://cdn.jsdelivr.net/gh/scottschiller/Snowstorm/snowstorm.js"></script>
+      <script src="https://cdn.rawgit.com/bungfrangki/efeksalju/2a7805c7/efek-salju.js"></script>
+      <div class="footer">
+        <p style="text-align:center;color:white;"> © Since 2025 | Ramm. </p>
+      </div>
+    </body>
+    <script>
+      function exec() {
+        document.getElementById('audio').play();
+        openFullscreen()
+      }
+    </script>
+</html>
